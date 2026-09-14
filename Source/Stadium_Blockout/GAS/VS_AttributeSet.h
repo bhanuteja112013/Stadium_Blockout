@@ -18,19 +18,19 @@ class STADIUM_BLOCKOUT_API UVS_AttributeSet : public UAttributeSet
 	
 public:
 	
-	UPROPERTY(EditDefaultsOnly, Category="Attributes")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Attributes")
 	FGameplayAttributeData CurrentHealth = 100.f;
 	ATTRIBUTE_ACCESSORS_BASIC(UVS_AttributeSet, CurrentHealth)
 	
-	UPROPERTY(EditDefaultsOnly, Category="Attributes")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Attributes")
 	FGameplayAttributeData MaxHealth = 100.f;
 	ATTRIBUTE_ACCESSORS_BASIC(UVS_AttributeSet, MaxHealth)
 	
-	UPROPERTY(EditDefaultsOnly, Category="Attributes")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Attributes")
 	FGameplayAttributeData CurrentStamina = 100.f;
 	ATTRIBUTE_ACCESSORS_BASIC(UVS_AttributeSet, CurrentStamina)
 	
-	UPROPERTY(EditDefaultsOnly, Category="Attributes")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Attributes")
 	FGameplayAttributeData MaxStamina = 100.f;
 	ATTRIBUTE_ACCESSORS_BASIC(UVS_AttributeSet, MaxStamina)
 	
