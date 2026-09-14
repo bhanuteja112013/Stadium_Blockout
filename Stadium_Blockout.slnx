@@ -10,14 +10,14 @@
     <Platform Name="Win64-arm64ec" />
   </Configurations>
   <Folder Name="/Engine/">
-    <Project Path="Intermediate/ProjectFiles/UE5.vcxproj" Id="a1858fcf-d1fc-3169-aeea-73ae479fe3a2">
+    <Project Path="Intermediate/ProjectFiles/UE5.vcxproj" Id="e1b348ba-7420-394f-a1a2-24e88fb19c7b">
       <BuildType Project="BuiltWithUnrealBuildTool" />
       <Platform Project="Win64" />
       <Build Project="false" />
     </Project>
   </Folder>
   <Folder Name="/Games/">
-    <Project Path="Intermediate/ProjectFiles/Stadium_Blockout.vcxproj" Id="ccab0b75-c361-3717-95e0-6a286e4185ff">
+    <Project Path="Intermediate/ProjectFiles/Stadium_Blockout.vcxproj" Id="0560692d-eaea-355c-9702-51f17bb9f033">
       <BuildType Solution="DebugGame Editor|Win64" Project="DebugGame_Editor" />
       <BuildType Solution="DebugGame Editor|Win64-arm64" Project="Win64_arm64_DebugGame_Editor" />
       <BuildType Solution="DebugGame Editor|Win64-arm64ec" Project="Win64_arm64ec_DebugGame_Editor" />

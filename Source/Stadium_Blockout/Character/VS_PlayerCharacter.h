@@ -43,5 +43,5 @@ public:
 	virtual void Attack() override;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	bool bWeaponEquipped;
+	bool bWeaponEquipped = true;
 };
