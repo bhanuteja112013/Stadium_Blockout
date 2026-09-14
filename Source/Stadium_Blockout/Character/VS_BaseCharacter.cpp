@@ -19,8 +19,7 @@ AVS_BaseCharacter::AVS_BaseCharacter()
 	AttributeSet = CreateDefaultSubobject<UVS_AttributeSet>(TEXT("AttributeSet"));
 
 	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
-	WeaponMesh->SetupAttachment(GetMesh(), FName("WeaponSocket")); 
-	WeaponMesh->SetVisibility(false); 
+	WeaponMesh->SetupAttachment(GetMesh(), WeaponSocketName); 
 }
 
 UAbilitySystemComponent* AVS_BaseCharacter::GetAbilitySystemComponent() const
@@ -41,6 +40,7 @@ void AVS_BaseCharacter::PossessedBy(AController* NewController)
 void AVS_BaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	bisAttacking = false;
 }
 
 void AVS_BaseCharacter::TakeDamage_Implementation(float Amount, AActor* DamageCauser)

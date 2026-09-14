@@ -6,7 +6,6 @@
 #include "GameFramework/Character.h"
 #include "Stadium_Blockout/Interfaces/DamageInterface.h"
 #include "AbilitySystemInterface.h"
-#include "Components/TimelineComponent.h"
 #include "VS_BaseCharacter.generated.h"
 
 class UVS_AttributeSet;
@@ -49,6 +48,9 @@ public:
 	void Dodge();
 	UFUNCTION(BlueprintCallable, Category="Input Actions")
 	virtual void Attack();
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat")
+	FName WeaponSocketName = "WeaponSocket";
 	
 	UFUNCTION(BlueprintCallable, Category="Combat")
 	void NotifyStartSweep();
