@@ -47,6 +47,17 @@ void AVS_BaseCharacter::TakeDamage_Implementation(float Amount, AActor* DamageCa
 {
 	IDamageInterface::TakeDamage_Implementation(Amount, DamageCauser);
 	UE_LOG(LogTemp, Warning, TEXT("DamageTaken"));
+	
+	FGameplayEffectContextHandle EffectContext = GetAbilitySystemComponent()->MakeEffectContext();
+	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(DamageEffect, 1, EffectContext);
+	if (SpecHandle.IsValid())
+	{
+		FGameplayEffectSpec* Spec = SpecHandle.Data.Get();
+		Spec->SetByCallerTagMagnitudes.Add(FGameplayTag::RequestGameplayTag(FName("Data.Damage.Physical")), -Amount);
+		GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*Spec);
+	}
+	
+	
 }
 
 void AVS_BaseCharacter::StartJump()
@@ -82,6 +93,17 @@ void AVS_BaseCharacter::Attack()
 	{
 		FGameplayTag AttackTag = FGameplayTag::RequestGameplayTag(FName("Ability.Attack"));
 		ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(AttackTag));
+	}
+}
+
+void AVS_BaseCharacter::ApplyStaminaCost(float Magnitude)
+{
+	FGameplayEffectContextHandle EffectContext = GetAbilitySystemComponent()->MakeEffectContext();
+	FGameplayEffectSpecHandle GE_Handle = GetAbilitySystemComponent()->MakeOutgoingSpec(StaminaCostEffect, 1, EffectContext);
+	if (GE_Handle.IsValid()){
+		FGameplayEffectSpec* Spec = GE_Handle.Data.Get();
+		Spec->SetByCallerTagMagnitudes.Add(FGameplayTag::RequestGameplayTag(FName("Data.StaminaCost")), -Magnitude);
+		GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*Spec);
 	}
 }
 
