@@ -82,6 +82,7 @@ void UGA_Weapon::StartSweep()
 {
 	AVS_BaseCharacter* Char = Cast<AVS_BaseCharacter>(GetAvatarActorFromActorInfo());
 	if (!Char) return;
+	Char->ApplyStaminaCost(30);
 
 	FVector CurrentStart = Char->GetMesh()->GetSocketLocation(StartSocket);
 	FVector CurrentEnd = Char->GetMesh()->GetSocketLocation(EndSocket);

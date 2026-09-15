@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Stadium_Blockout/Interfaces/DamageInterface.h"
 #include "AbilitySystemInterface.h"
+#include "GameplayEffect.h"
 #include "VS_BaseCharacter.generated.h"
 
 class UVS_AttributeSet;
@@ -49,6 +50,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Input Actions")
 	virtual void Attack();
 	
+	UFUNCTION(BlueprintCallable, Category="Combat")
+	void ApplyStaminaCost(float Magnitude);
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat")
 	FName WeaponSocketName = "WeaponSocket";
 	
@@ -90,5 +94,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Abilities")
 	TSubclassOf<class UGameplayAbility> JumpAbilityClass;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+	TSubclassOf<class UGameplayEffect> StaminaCostEffect;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+	TSubclassOf<class UGameplayEffect> DamageEffect;
 	void GiveDefaultAbilities();
 };
