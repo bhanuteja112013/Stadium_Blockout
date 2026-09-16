@@ -31,6 +31,7 @@ void AVS_PlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	ApplyEffectToSelf(RegenStamina, FName("Data.Stamina.Regen"), StaminaRegenRate);
 }
 
 // Called every frame

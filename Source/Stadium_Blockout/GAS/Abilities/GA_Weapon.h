@@ -52,6 +52,18 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
 	TSubclassOf<class UGameplayEffect> DamageEffectClass;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+	float StaminaCost = 20;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+	TSubclassOf<class UGameplayEffect> StaminaCostEffect;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+	TSubclassOf<class UGameplayEffect> DamageEffect;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+	float StaminaMagnitude = 20.f;
 
 private:
 	int32 ComboCount = 0;

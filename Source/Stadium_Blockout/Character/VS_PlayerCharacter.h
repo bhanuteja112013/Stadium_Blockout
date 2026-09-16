@@ -44,4 +44,10 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	bool bWeaponEquipped = true;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Effects")
+	TSubclassOf<UGameplayEffect> RegenStamina;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Stamina")
+	float StaminaRegenRate;
 };

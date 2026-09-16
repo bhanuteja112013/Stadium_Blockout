@@ -50,9 +50,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Input Actions")
 	virtual void Attack();
 	
-	UFUNCTION(BlueprintCallable, Category="Combat")
-	void ApplyStaminaCost(float Magnitude);
-	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat")
 	FName WeaponSocketName = "WeaponSocket";
 	
@@ -94,10 +91,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Abilities")
 	TSubclassOf<class UGameplayAbility> JumpAbilityClass;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
-	TSubclassOf<class UGameplayEffect> StaminaCostEffect;
+	UFUNCTION(BlueprintCallable, Category = "GAS|Ability")
+	void GrantAbility(const FGameplayAbilitySpec& Ability);
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
-	TSubclassOf<class UGameplayEffect> DamageEffect;
-	void GiveDefaultAbilities();
+	UFUNCTION(BlueprintCallable, Category = "GAS|Ability")
+	void RemoveAbility(FGameplayAbilitySpecHandle& Ability);
+	
+	UFUNCTION(BlueprintCallable, Category = "GAS|Effects")
+	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, FName DataTag, float Magnitude);
+	
 };

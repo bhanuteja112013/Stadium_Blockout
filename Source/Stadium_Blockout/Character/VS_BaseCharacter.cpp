@@ -14,12 +14,13 @@ AVS_BaseCharacter::AVS_BaseCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
+	WeaponMesh->SetupAttachment(GetMesh(), WeaponSocketName); 
+	
+	
 	
 	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystem"));
 	AttributeSet = CreateDefaultSubobject<UVS_AttributeSet>(TEXT("AttributeSet"));
-
-	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
-	WeaponMesh->SetupAttachment(GetMesh(), WeaponSocketName); 
 }
 
 UAbilitySystemComponent* AVS_BaseCharacter::GetAbilitySystemComponent() const
@@ -33,7 +34,9 @@ void AVS_BaseCharacter::PossessedBy(AController* NewController)
 	if (ASC)
 	{
 		ASC->InitAbilityActorInfo(this, this);
-		GiveDefaultAbilities();
+		GrantAbility(WeaponAbilityClass);
+		GrantAbility(DodgeAbilityClass);
+		GrantAbility(JumpAbilityClass);
 	}
 }
 
@@ -47,17 +50,6 @@ void AVS_BaseCharacter::TakeDamage_Implementation(float Amount, AActor* DamageCa
 {
 	IDamageInterface::TakeDamage_Implementation(Amount, DamageCauser);
 	UE_LOG(LogTemp, Warning, TEXT("DamageTaken"));
-	
-	FGameplayEffectContextHandle EffectContext = GetAbilitySystemComponent()->MakeEffectContext();
-	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(DamageEffect, 1, EffectContext);
-	if (SpecHandle.IsValid())
-	{
-		FGameplayEffectSpec* Spec = SpecHandle.Data.Get();
-		Spec->SetByCallerTagMagnitudes.Add(FGameplayTag::RequestGameplayTag(FName("Data.Damage.Physical")), -Amount);
-		GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*Spec);
-	}
-	
-	
 }
 
 void AVS_BaseCharacter::StartJump()
@@ -96,17 +88,6 @@ void AVS_BaseCharacter::Attack()
 	}
 }
 
-void AVS_BaseCharacter::ApplyStaminaCost(float Magnitude)
-{
-	FGameplayEffectContextHandle EffectContext = GetAbilitySystemComponent()->MakeEffectContext();
-	FGameplayEffectSpecHandle GE_Handle = GetAbilitySystemComponent()->MakeOutgoingSpec(StaminaCostEffect, 1, EffectContext);
-	if (GE_Handle.IsValid()){
-		FGameplayEffectSpec* Spec = GE_Handle.Data.Get();
-		Spec->SetByCallerTagMagnitudes.Add(FGameplayTag::RequestGameplayTag(FName("Data.StaminaCost")), -Magnitude);
-		GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*Spec);
-	}
-}
-
 void AVS_BaseCharacter::HandleDeath()
 {
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -121,22 +102,27 @@ void AVS_BaseCharacter::HandleDeath()
 	//Request Respawn from GameMode
 }
 
-void AVS_BaseCharacter::GiveDefaultAbilities()
+void AVS_BaseCharacter::GrantAbility(const FGameplayAbilitySpec& Ability)
 {
 	if (HasAuthority() && ASC)
 	{
-		if (WeaponAbilityClass)
-		{
-			ASC->GiveAbility(FGameplayAbilitySpec(WeaponAbilityClass, 1, INDEX_NONE, this));
-		}
-		if (DodgeAbilityClass)
-		{
-			ASC->GiveAbility(FGameplayAbilitySpec(DodgeAbilityClass, 1, INDEX_NONE, this));
-		}
-		if (JumpAbilityClass)
-		{
-			ASC->GiveAbility(FGameplayAbilitySpec(JumpAbilityClass, 1, INDEX_NONE, this));
-		}
+		ASC->GiveAbility(Ability);
+	}
+}
+
+void AVS_BaseCharacter::RemoveAbility(FGameplayAbilitySpecHandle& Ability)
+{
+	ASC->ClearAbility(Ability);
+}
+
+void AVS_BaseCharacter::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, FName DataTag, float Magnitude)
+{
+	FGameplayEffectContextHandle EffectContext = GetAbilitySystemComponent()->MakeEffectContext();
+	FGameplayEffectSpecHandle GE_Handle = GetAbilitySystemComponent()->MakeOutgoingSpec(GameplayEffectClass, 1, EffectContext);
+	if (GE_Handle.IsValid()){
+		FGameplayEffectSpec* Spec = GE_Handle.Data.Get();
+		Spec->SetByCallerTagMagnitudes.Add(FGameplayTag::RequestGameplayTag(FName(DataTag)), Magnitude);
+		GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*Spec);
 	}
 }
 

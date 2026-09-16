@@ -82,7 +82,7 @@ void UGA_Weapon::StartSweep()
 {
 	AVS_BaseCharacter* Char = Cast<AVS_BaseCharacter>(GetAvatarActorFromActorInfo());
 	if (!Char) return;
-	Char->ApplyStaminaCost(30);
+	Char->ApplyEffectToSelf(StaminaCostEffect, FName("Data.Stamina.Cost"), StaminaMagnitude);
 
 	FVector CurrentStart = Char->GetMesh()->GetSocketLocation(StartSocket);
 	FVector CurrentEnd = Char->GetMesh()->GetSocketLocation(EndSocket);
@@ -113,6 +113,7 @@ void UGA_Weapon::StartSweep()
 				if (HitActor->GetClass()->ImplementsInterface(UDamageInterface::StaticClass()))
 				{
 					IDamageInterface::Execute_TakeDamage(HitActor, DamageAmount, Char);
+					Char->ApplyEffectToSelf(DamageEffect, FName("Data.Damage.Physical"), DamageAmount);
 				}
 				AlreadyHitActors.Add(HitActor);
 			}
