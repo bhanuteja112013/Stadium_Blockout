@@ -92,7 +92,7 @@ public:
 	TSubclassOf<class UGameplayAbility> JumpAbilityClass;
 	
 	UFUNCTION(BlueprintCallable, Category = "GAS|Ability")
-	void GrantAbility(const FGameplayAbilitySpec& Ability);
+	void GrantAbility(TSubclassOf<UGameplayAbility> AbilityClass);
 	
 	UFUNCTION(BlueprintCallable, Category = "GAS|Ability")
 	void RemoveAbility(FGameplayAbilitySpecHandle& Ability);

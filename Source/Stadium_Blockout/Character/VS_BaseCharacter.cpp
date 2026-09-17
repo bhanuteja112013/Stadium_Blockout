@@ -3,7 +3,6 @@
 
 #include "VS_BaseCharacter.h"
 #include "AbilitySystemComponent.h"
-#include "AbilitySystemBlueprintLibrary.h"
 #include "Stadium_Blockout/GAS/VS_AttributeSet.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -72,19 +71,22 @@ void AVS_BaseCharacter::Dodge()
 	{
 		ASC->TryActivateAbilityByClass(DodgeAbilityClass);
 	}
-	
-	
 }
 
 void AVS_BaseCharacter::Attack()
 {
+	UE_LOG(LogTemp, Warning, TEXT("[COMBO] Attack() called. bisAttacking=%s"), bisAttacking ? TEXT("true") : TEXT("false"));
 	if (bisAttacking) return;
 	bisAttacking = true;
 
-	if (ASC)
+	if (ASC && WeaponAbilityClass)
 	{
-		FGameplayTag AttackTag = FGameplayTag::RequestGameplayTag(FName("Ability.Attack"));
-		ASC->TryActivateAbilitiesByTag(FGameplayTagContainer(AttackTag));
+		bool bSuccess = ASC->TryActivateAbilityByClass(WeaponAbilityClass);
+		UE_LOG(LogTemp, Warning, TEXT("[COMBO] TryActivateAbilityByClass result: %s"), bSuccess ? TEXT("SUCCESS") : TEXT("FAILED"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("[COMBO] ASC=%s, WeaponAbilityClass=%s"), ASC ? TEXT("valid") : TEXT("NULL"), WeaponAbilityClass ? TEXT("valid") : TEXT("NULL"));
 	}
 }
 
@@ -102,11 +104,11 @@ void AVS_BaseCharacter::HandleDeath()
 	//Request Respawn from GameMode
 }
 
-void AVS_BaseCharacter::GrantAbility(const FGameplayAbilitySpec& Ability)
+void AVS_BaseCharacter::GrantAbility(TSubclassOf<UGameplayAbility> AbilityClass)
 {
-	if (HasAuthority() && ASC)
+	if (HasAuthority() && ASC && AbilityClass)
 	{
-		ASC->GiveAbility(Ability);
+		ASC->GiveAbility(FGameplayAbilitySpec(AbilityClass, 1, INDEX_NONE, this));
 	}
 }
 
@@ -115,55 +117,73 @@ void AVS_BaseCharacter::RemoveAbility(FGameplayAbilitySpecHandle& Ability)
 	ASC->ClearAbility(Ability);
 }
 
-void AVS_BaseCharacter::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, FName DataTag, float Magnitude)
+void AVS_BaseCharacter::ApplyEffectToSelf(
+	TSubclassOf<UGameplayEffect> GameplayEffectClass,
+	FName DataTag,
+	float Magnitude)
 {
-	FGameplayEffectContextHandle EffectContext = GetAbilitySystemComponent()->MakeEffectContext();
-	FGameplayEffectSpecHandle GE_Handle = GetAbilitySystemComponent()->MakeOutgoingSpec(GameplayEffectClass, 1, EffectContext);
-	if (GE_Handle.IsValid()){
+	FGameplayEffectContextHandle EffectContext =
+		GetAbilitySystemComponent()->MakeEffectContext();
+
+	FGameplayEffectSpecHandle GE_Handle =
+		GetAbilitySystemComponent()->MakeOutgoingSpec(
+			GameplayEffectClass,
+			1.0f,
+			EffectContext
+		);
+
+	if (GE_Handle.IsValid())
+	{
 		FGameplayEffectSpec* Spec = GE_Handle.Data.Get();
-		Spec->SetByCallerTagMagnitudes.Add(FGameplayTag::RequestGameplayTag(FName(DataTag)), Magnitude);
+
+		const FGameplayTag Tag =
+			FGameplayTag::RequestGameplayTag(DataTag);
+
+		Spec->SetSetByCallerMagnitude(Tag, Magnitude);
+
 		GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*Spec);
 	}
 }
 
 void AVS_BaseCharacter::NotifyStartSweep()
 {
-	if (ASC)
+	if (ASC && WeaponAbilityClass)
 	{
-		TArray<FGameplayAbilitySpec*> Specs;
-		ASC->GetActivatableGameplayAbilitySpecsByAllMatchingTags(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Ability.Attack"))), Specs);
-		for (FGameplayAbilitySpec* Spec : Specs)
+		FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromClass(WeaponAbilityClass);
+		UE_LOG(LogTemp, Warning, TEXT("[SWEEP] NotifyStartSweep: Spec=%s, IsActive=%s"),
+			Spec ? TEXT("found") : TEXT("NULL"),
+			(Spec && Spec->IsActive()) ? TEXT("true") : TEXT("false"));
+		if (Spec && Spec->IsActive())
 		{
-			if (Spec->IsActive())
+			for (UGameplayAbility* Instance : Spec->GetAbilityInstances())
 			{
-				for (UGameplayAbility* Instance : Spec->GetAbilityInstances())
+				if (UGA_Weapon* WeaponAbility = Cast<UGA_Weapon>(Instance))
 				{
-					if (UGA_Weapon* WeaponAbility = Cast<UGA_Weapon>(Instance))
-					{
-						WeaponAbility->StartSweep();
-					}
+					UE_LOG(LogTemp, Warning, TEXT("[SWEEP] Calling StartSweep()"));
+					WeaponAbility->StartSweep();
 				}
 			}
 		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("[SWEEP] NotifyStartSweep: ASC=%s, WeaponAbilityClass=%s"),
+			ASC ? TEXT("valid") : TEXT("NULL"), WeaponAbilityClass ? TEXT("valid") : TEXT("NULL"));
 	}
 }
 
 void AVS_BaseCharacter::NotifyResetMeleeAttack()
 {
-	if (ASC)
+	if (ASC && WeaponAbilityClass)
 	{
-		TArray<FGameplayAbilitySpec*> Specs;
-		ASC->GetActivatableGameplayAbilitySpecsByAllMatchingTags(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Ability.Attack"))), Specs);
-		for (FGameplayAbilitySpec* Spec : Specs)
+		FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromClass(WeaponAbilityClass);
+		if (Spec && Spec->IsActive())
 		{
-			if (Spec->IsActive())
+			for (UGameplayAbility* Instance : Spec->GetAbilityInstances())
 			{
-				for (UGameplayAbility* Instance : Spec->GetAbilityInstances())
+				if (UGA_Weapon* WeaponAbility = Cast<UGA_Weapon>(Instance))
 				{
-					if (UGA_Weapon* WeaponAbility = Cast<UGA_Weapon>(Instance))
-					{
-						WeaponAbility->ResetMeleeAttack();
-					}
+					WeaponAbility->ResetMeleeAttack();
 				}
 			}
 		}
@@ -172,6 +192,7 @@ void AVS_BaseCharacter::NotifyResetMeleeAttack()
 
 void AVS_BaseCharacter::NotifyComboWindowOpened()
 {
+	UE_LOG(LogTemp, Warning, TEXT("[COMBO] ComboWindowOpened! bisAttacking set to false"));
 	bisAttacking = false;
 }
 

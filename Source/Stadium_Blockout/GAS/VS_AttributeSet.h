@@ -7,10 +7,6 @@
 #include "AbilitySystemComponent.h"
 #include "VS_AttributeSet.generated.h"
 
-/**
- * 
- * 
- */
 UCLASS()
 class STADIUM_BLOCKOUT_API UVS_AttributeSet : public UAttributeSet
 {

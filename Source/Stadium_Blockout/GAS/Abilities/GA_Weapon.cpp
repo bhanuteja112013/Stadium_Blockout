@@ -33,10 +33,22 @@ void UGA_Weapon::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const 
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
+	UE_LOG(LogTemp, Warning, TEXT("[COMBO] ActivateAbility called. ComboCount=%d, NumMontages=%d"), ComboCount, ComboMontages.Num());
+	
 	if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
 	{
+		UE_LOG(LogTemp, Error, TEXT("[COMBO] CommitAbility FAILED!"));
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;
+	}
+	
+	// Pay stamina cost once per attack activation
+	if (AVS_BaseCharacter* Char = Cast<AVS_BaseCharacter>(ActorInfo->AvatarActor.Get()))
+	{
+		if (StaminaCostEffect)
+		{
+			Char->ApplyEffectToSelf(StaminaCostEffect, FName("Data.Stamina.Cost"), StaminaMagnitude);
+		}
 	}
 	
 	if (!ComboMontages.IsValidIndex(ComboCount))
@@ -47,11 +59,13 @@ void UGA_Weapon::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const 
 	if (ComboMontages.IsValidIndex(ComboCount))
 	{
 		UAnimMontage* MontageToPlay = ComboMontages[ComboCount];
+		UE_LOG(LogTemp, Warning, TEXT("[COMBO] Playing montage index %d: %s"), ComboCount, *GetNameSafe(MontageToPlay));
 		UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, MontageToPlay, MontagePlayRate);
 		
 		if (PlayMontageTask)
 		{
 			PlayMontageTask->OnCompleted.AddDynamic(this, &UGA_Weapon::OnMontageFinished);
+			PlayMontageTask->OnCancelled.AddDynamic(this, &UGA_Weapon::OnMontageFinished);
 			PlayMontageTask->ReadyForActivation();
 		}
 		
@@ -65,6 +79,7 @@ void UGA_Weapon::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const 
 
 void UGA_Weapon::OnMontageFinished()
 {
+	UE_LOG(LogTemp, Warning, TEXT("[COMBO] OnMontageFinished! Resetting ComboCount from %d to 0"), ComboCount);
 	ComboCount = 0;
 	if (AVS_BaseCharacter* Char = Cast<AVS_BaseCharacter>(GetAvatarActorFromActorInfo()))
 	{
@@ -82,7 +97,6 @@ void UGA_Weapon::StartSweep()
 {
 	AVS_BaseCharacter* Char = Cast<AVS_BaseCharacter>(GetAvatarActorFromActorInfo());
 	if (!Char) return;
-	Char->ApplyEffectToSelf(StaminaCostEffect, FName("Data.Stamina.Cost"), StaminaMagnitude);
 
 	FVector CurrentStart = Char->GetMesh()->GetSocketLocation(StartSocket);
 	FVector CurrentEnd = Char->GetMesh()->GetSocketLocation(EndSocket);

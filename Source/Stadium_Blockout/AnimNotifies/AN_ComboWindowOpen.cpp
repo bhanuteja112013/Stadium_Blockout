@@ -10,8 +10,8 @@ void UAN_ComboWindowOpen::Notify(USkeletalMeshComponent* MeshComp, UAnimSequence
 {
 	Super::Notify(MeshComp, Animation, EventReference);
 	
-	if (!MeshComp && !MeshComp->GetOwner()) return;
-	AVS_BaseCharacter* Char = static_cast<AVS_BaseCharacter*>(MeshComp->GetOwner());
+	if (!MeshComp || !MeshComp->GetOwner()) return;
+	AVS_BaseCharacter* Char = Cast<AVS_BaseCharacter>(MeshComp->GetOwner());
 	if (Char)
 	{
 		Char->NotifyComboWindowOpened();
