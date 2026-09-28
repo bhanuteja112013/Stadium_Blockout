@@ -42,15 +42,6 @@ void UGA_Weapon::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const 
 		return;
 	}
 	
-	// Pay stamina cost once per attack activation
-	if (AVS_BaseCharacter* Char = Cast<AVS_BaseCharacter>(ActorInfo->AvatarActor.Get()))
-	{
-		if (StaminaCostEffect)
-		{
-			Char->ApplyEffectToSelf(StaminaCostEffect, FName("Data.Stamina.Cost"), StaminaMagnitude);
-		}
-	}
-	
 	if (!ComboMontages.IsValidIndex(ComboCount))
 	{
 		ComboCount = 0;
