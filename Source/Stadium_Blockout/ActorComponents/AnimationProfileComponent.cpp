@@ -1,11 +1,11 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AC_LockOnSystem.h"
+#include "AnimationProfileComponent.h"
 
 
 // Sets default values for this component's properties
-UAC_LockOnSystem::UAC_LockOnSystem()
+UAnimationProfileComponent::UAnimationProfileComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -16,7 +16,7 @@ UAC_LockOnSystem::UAC_LockOnSystem()
 
 
 // Called when the game starts
-void UAC_LockOnSystem::BeginPlay()
+void UAnimationProfileComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -26,8 +26,8 @@ void UAC_LockOnSystem::BeginPlay()
 
 
 // Called every frame
-void UAC_LockOnSystem::TickComponent(float DeltaTime, ELevelTick TickType,
-                                     FActorComponentTickFunction* ThisTickFunction)
+void UAnimationProfileComponent::TickComponent(float DeltaTime, ELevelTick TickType,
+                                               FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 

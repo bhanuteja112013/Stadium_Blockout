@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "AttributeSet.h"
 #include "AbilitySystemComponent.h"
-#include "VS_AttributeSet.generated.h"
+#include "BR_AttributeSet.generated.h"
 
 UCLASS()
 class STADIUM_BLOCKOUT_API UVS_AttributeSet : public UAttributeSet

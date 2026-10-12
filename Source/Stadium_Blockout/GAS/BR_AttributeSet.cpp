@@ -1,9 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "VS_AttributeSet.h"
+#include "BR_AttributeSet.h"
 #include "GameplayEffectExtension.h"
-#include "Stadium_Blockout/Character/VS_BaseCharacter.h"
 #include "Math/UnrealMathUtility.h"
 
 void UVS_AttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -30,10 +29,6 @@ void UVS_AttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectMod
 
 		if (GetCurrentHealth() <= 0.f)
 		{
-			if (AVS_BaseCharacter* AvatarChar = Cast<AVS_BaseCharacter>(GetOwningActor()))
-			{
-				AvatarChar->HandleDeath();
-			}
 		}
 	}
 	else if (Data.EvaluatedData.Attribute == GetCurrentStaminaAttribute())

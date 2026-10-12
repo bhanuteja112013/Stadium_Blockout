@@ -1,0 +1,36 @@
+﻿// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
+#include "Components/ActorComponent.h"
+#include "Stadium_Blockout/DataAssets/AnimationMontageData.h"
+#include "AnimationProfileComponent.generated.h"
+
+
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
+class STADIUM_BLOCKOUT_API UAnimationProfileComponent : public UActorComponent
+{
+	GENERATED_BODY()
+
+public:
+	// Sets default values for this component's properties
+	UAnimationProfileComponent();
+
+protected:
+	// Called when the game starts
+	virtual void BeginPlay() override;
+
+public:
+	// Called every frame
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
+	                           FActorComponentTickFunction* ThisTickFunction) override;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ability Montages")
+	TMap<FGameplayTag, UAnimationMontageData*> CharacterAnimMontageData;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combo Animations")
+	TArray<UAnimationMontageData*> CharacterComboAnimData;
+	
+};
