@@ -5,10 +5,10 @@
 #include "CoreMinimal.h"
 #include "AttributeSet.h"
 #include "AbilitySystemComponent.h"
-#include "BR_AttributeSet.generated.h"
+#include "UBR_AttributeSet.generated.h"
 
 UCLASS()
-class STADIUM_BLOCKOUT_API UVS_AttributeSet : public UAttributeSet
+class STADIUM_BLOCKOUT_API UBR_AttributeSet : public UAttributeSet
 {
 	GENERATED_BODY()
 	
@@ -16,19 +16,19 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Attributes")
 	FGameplayAttributeData CurrentHealth = 100.f;
-	ATTRIBUTE_ACCESSORS_BASIC(UVS_AttributeSet, CurrentHealth)
+	ATTRIBUTE_ACCESSORS_BASIC(UBR_AttributeSet, CurrentHealth)
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Attributes")
 	FGameplayAttributeData MaxHealth = 100.f;
-	ATTRIBUTE_ACCESSORS_BASIC(UVS_AttributeSet, MaxHealth)
+	ATTRIBUTE_ACCESSORS_BASIC(UBR_AttributeSet, MaxHealth)
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Attributes")
 	FGameplayAttributeData CurrentStamina = 100.f;
-	ATTRIBUTE_ACCESSORS_BASIC(UVS_AttributeSet, CurrentStamina)
+	ATTRIBUTE_ACCESSORS_BASIC(UBR_AttributeSet, CurrentStamina)
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Attributes")
 	FGameplayAttributeData MaxStamina = 100.f;
-	ATTRIBUTE_ACCESSORS_BASIC(UVS_AttributeSet, MaxStamina)
+	ATTRIBUTE_ACCESSORS_BASIC(UBR_AttributeSet, MaxStamina)
 	
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;

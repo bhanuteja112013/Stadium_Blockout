@@ -25,4 +25,7 @@ public:
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Combat")
 	void TakeDamage(float Amount, AActor* DamageCauser);
+	
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Combat")
+	void HandleDeath();
 };

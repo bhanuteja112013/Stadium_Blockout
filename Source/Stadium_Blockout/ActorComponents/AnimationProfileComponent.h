@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "Components/ActorComponent.h"
-#include "Stadium_Blockout/DataAssets/AnimationMontageData.h"
+#include "Stadium_Blockout/DataAssets/Animations/AnimationMontageData.h"
 #include "AnimationProfileComponent.generated.h"
 
 

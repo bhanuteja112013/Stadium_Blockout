@@ -1,11 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BR_AttributeSet.h"
+#include "UBR_AttributeSet.h"
 #include "GameplayEffectExtension.h"
 #include "Math/UnrealMathUtility.h"
+#include "Stadium_Blockout/Interfaces/DamageInterface.h"
 
-void UVS_AttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
+void UBR_AttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 	Super::PreAttributeChange(Attribute, NewValue);
 
@@ -19,7 +20,7 @@ void UVS_AttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, f
 	}
 }
 
-void UVS_AttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)
+void UBR_AttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
 
@@ -29,6 +30,13 @@ void UVS_AttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectMod
 
 		if (GetCurrentHealth() <= 0.f)
 		{
+			if (UAbilitySystemComponent* ASC = GetOwningAbilitySystemComponent())
+			{
+				if (ASC->GetAvatarActor()->Implements<UDamageInterface>())
+				{
+					IDamageInterface::Execute_HandleDeath(ASC->GetAvatarActor());
+				}
+			}
 		}
 	}
 	else if (Data.EvaluatedData.Attribute == GetCurrentStaminaAttribute())
