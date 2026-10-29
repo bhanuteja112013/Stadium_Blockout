@@ -11,7 +11,7 @@ UAbilityLoadoutComponent::UAbilityLoadoutComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 
 	// ...
 }
@@ -27,7 +27,7 @@ void UAbilityLoadoutComponent::BeginPlay()
 
 	if (!AbilitySystemRef) return;
 
-	for (const auto& AbilityPair : DefaultAbilities)
+	for (const auto& AbilityPair : GainedAbilities)
 	{
 		
 		const FGameplayTag& AbilityTag = AbilityPair.Key;
@@ -38,6 +38,7 @@ void UAbilityLoadoutComponent::BeginPlay()
 
 		FGameplayAbilitySpec Spec(AbilityClass, 1);
 		AbilitySystemRef->GiveAbility(Spec);
+		AbilitySpecHandles.Add(TEXT(pair, Spec.Handle);
 	}
 }
 

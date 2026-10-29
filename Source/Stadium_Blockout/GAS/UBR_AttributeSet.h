@@ -30,6 +30,15 @@ public:
 	FGameplayAttributeData MaxStamina = 100.f;
 	ATTRIBUTE_ACCESSORS_BASIC(UBR_AttributeSet, MaxStamina)
 	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Attributes")
+	FGameplayAttributeData AttackDamage = 20.f;
+	ATTRIBUTE_ACCESSORS_BASIC(UBR_AttributeSet, AttackDamage)
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Attributes")
+	FGameplayAttributeData MovementSpeed = 500.f;
+	ATTRIBUTE_ACCESSORS_BASIC(UBR_AttributeSet, MovementSpeed)
+	
+	
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
 	

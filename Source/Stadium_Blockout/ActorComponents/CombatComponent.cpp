@@ -24,7 +24,10 @@ UCombatComponent::UCombatComponent()
 void UCombatComponent::SetPlayerRef()
 {
 	PlayerRef = Cast<ACharacter>(GetOwner());
-	
+	if (PlayerRef)
+	{
+		ASCRef = PlayerRef->FindComponentByClass<UAbilitySystemComponent>();
+	}
 	if (PlayerRef && PlayerRef->GetMesh())
 	{
 		AnimInstance = PlayerRef->GetMesh()->GetAnimInstance();
@@ -130,9 +133,14 @@ void UCombatComponent::StartSweep()
 				if (HitActors.Contains(HitActor)) continue;
 				if (HitActor->Implements<UDamageInterface>())
 				{
+					
+					float FinalDamage = Damage * DamageMultiplier;
 					HitActors.Add(HitActor);
-					IDamageInterface::Execute_TakeDamage(HitActor, Damage, GetOwner());
-					UE_LOG(LogTemp, Warning, TEXT("Damage Taken by %s: %f"), *HitActor->GetName(), Damage);
+					IDamageInterface::Execute_TakeDamage(HitActor, FinalDamage, GetOwner());
+
+					UE_LOG(LogTemp, Warning, TEXT("Damage Dealt to %s: %f"),
+						*HitActor->GetName(), FinalDamage);
+
 				}
 			}
 		}

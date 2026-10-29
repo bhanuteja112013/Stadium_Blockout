@@ -56,6 +56,9 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Trace Settings")
 	float Damage = 10.f;
 	
+	UPROPERTY(BlueprintReadWrite, Category = "Combat Settings")
+	float DamageMultiplier = 1.f;
+	
 	UPROPERTY(BlueprintReadOnly, Category = "Combat Settings")
 	TObjectPtr<ACharacter> PlayerRef = nullptr;
 	
@@ -67,6 +70,9 @@ public:
 	
 	UPROPERTY()
     TSet<TObjectPtr<AActor>> HitActors;
+	
+	UPROPERTY()
+	TObjectPtr<UAbilitySystemComponent> ASCRef = nullptr;
 	
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	void StartComboAttack();

@@ -23,7 +23,7 @@ protected:
 
 public:
 
-	TMap<FGameplayTag, TSubclassOf<UGameplayAbility>> AllAbilities;
+	TMap<FGameplayTag, TSubclassOf<FGameplayAbilitySpecHandle>> AbilitySpecHandles;
 	
-	TMap<FGameplayTag, TSubclassOf<UGameplayAbility>> DefaultAbilities;
+	TMap<FGameplayTag, TSubclassOf<UGameplayAbility>> GainedAbilities;
 };
