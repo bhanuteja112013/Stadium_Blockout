@@ -8,7 +8,9 @@
 #include "AnimationProfileComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Stadium_Blockout/DebugHelper.h"
 #include "Stadium_Blockout/DataAssets/Animations/AnimationMontageData.h"
+#include "Stadium_Blockout/GAS/UBR_AttributeSet.h"
 #include "Stadium_Blockout/Interfaces/DamageInterface.h"
 
 // Sets default values for this component's properties
@@ -41,6 +43,8 @@ void UCombatComponent::BeginPlay()
 	Super::BeginPlay();
 	
 	SetPlayerRef();
+	
+	bIsAttacking = false;
 }
 
 void UCombatComponent::StartComboAttack()
@@ -66,16 +70,7 @@ void UCombatComponent::StartComboAttack()
 	if (MontageDuration > 0.0f)
 	{
 		ComboCount++;
-
-		GetWorld()->GetTimerManager().ClearTimer(ComboResetTimer);
-
-		GetWorld()->GetTimerManager().SetTimer(
-			ComboResetTimer,
-			this,
-			&UCombatComponent::ResetCombo,
-			ComboInputTimeout,
-			false
-		);
+		bIsAttacking = true;
 
 		AnimInstance->OnMontageEnded.AddUniqueDynamic(this,	&UCombatComponent::OnAttackMontageEnded);
 	}
@@ -133,14 +128,17 @@ void UCombatComponent::StartSweep()
 				if (HitActors.Contains(HitActor)) continue;
 				if (HitActor->Implements<UDamageInterface>())
 				{
-					
-					float FinalDamage = Damage * DamageMultiplier;
+					if (ASCRef)
+					{
+						ADebugHelper::Debug("CombatComponent Says the ASC Ref is Invalid, not passing any damage through");
+					}
+					float Multiplier = ASCRef->GetNumericAttribute(UBR_AttributeSet::GetDamageMultiplierAttribute());
+					float FinalDamage = Damage * Multiplier;
 					HitActors.Add(HitActor);
 					IDamageInterface::Execute_TakeDamage(HitActor, FinalDamage, GetOwner());
 
 					UE_LOG(LogTemp, Warning, TEXT("Damage Dealt to %s: %f"),
 						*HitActor->GetName(), FinalDamage);
-
 				}
 			}
 		}

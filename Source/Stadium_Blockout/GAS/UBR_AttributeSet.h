@@ -31,12 +31,12 @@ public:
 	ATTRIBUTE_ACCESSORS_BASIC(UBR_AttributeSet, MaxStamina)
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Attributes")
-	FGameplayAttributeData AttackDamage = 20.f;
-	ATTRIBUTE_ACCESSORS_BASIC(UBR_AttributeSet, AttackDamage)
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Attributes")
 	FGameplayAttributeData MovementSpeed = 500.f;
 	ATTRIBUTE_ACCESSORS_BASIC(UBR_AttributeSet, MovementSpeed)
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Attributes")
+	FGameplayAttributeData DamageMultiplier = 1.f;
+	ATTRIBUTE_ACCESSORS_BASIC(UBR_AttributeSet, DamageMultiplier)
 	
 	
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;

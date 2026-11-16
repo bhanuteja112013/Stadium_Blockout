@@ -9,10 +9,9 @@ void UNS_SweepWindow::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenc
 {
 	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
 	
-		
-	if (UCombatComponent* CombatComp = GetCombatComponent(MeshComp))
+	if (UCombatComponent* CombatCompRef = GetCombatComponent(MeshComp))
 	{
-		CombatComp->HandleSweepStart();
+		CombatCompRef->HandleSweepStart();
 	}
 	
 }
@@ -22,9 +21,9 @@ void UNS_SweepWindow::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequence
 {
 	Super::NotifyTick(MeshComp, Animation, FrameDeltaTime, EventReference);
 	
-	if (UCombatComponent* CombatComp = GetCombatComponent(MeshComp))
+	if (UCombatComponent* CombatCompRef = GetCombatComponent(MeshComp))
 	{
-		CombatComp->StartSweep();
+		CombatCompRef->StartSweep();
 	}
 }
 
@@ -32,15 +31,16 @@ void UNS_SweepWindow::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceB
 	const FAnimNotifyEventReference& EventReference)
 {
 	Super::NotifyEnd(MeshComp, Animation, EventReference);
-	
-	if (UCombatComponent* CombatComp = GetCombatComponent(MeshComp))
+	if (UCombatComponent* CombatCompRef = GetCombatComponent(MeshComp))
 	{
-		CombatComp->bIsAttacking = false;
-		CombatComp->HandleSweepEnd();
+		CombatCompRef->HandleSweepEnd();
 	}
 }
 
-UCombatComponent* UNS_SweepWindow::GetCombatComponent(USkeletalMeshComponent* MeshComp)
+UCombatComponent* UNS_SweepWindow::GetCombatComponent(const USkeletalMeshComponent* MeshComp)
 {
-	return IsValid(MeshComp) ? MeshComp->GetOwner()->GetComponentByClass<UCombatComponent>() : nullptr;
+	if (!MeshComp) return nullptr;
+	AActor* Owner = MeshComp->GetOwner();
+	
+	return Owner ?  MeshComp->GetOwner()->GetComponentByClass<UCombatComponent>() : nullptr;
 }

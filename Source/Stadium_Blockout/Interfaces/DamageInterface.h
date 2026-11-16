@@ -27,7 +27,7 @@ public:
 	void TakeDamage(float Amount, AActor* DamageCauser);
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Combat")
-	bool bIsTargetLockable();
+	bool IsTargetLockable() const;
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Combat")
 	void HandleDeath();

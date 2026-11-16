@@ -15,5 +15,10 @@ class STADIUM_BLOCKOUT_API UOverdrive : public UBaseAbility
 	GENERATED_BODY()
 	
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
+	
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Overdrive Settings")
+	TSubclassOf<UGameplayEffect> EffectToApply;
 	
 };

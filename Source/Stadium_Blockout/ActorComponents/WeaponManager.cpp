@@ -2,10 +2,12 @@
 
 
 #include "WeaponManager.h"
-
-#include "AbilitySystemComponent.h"
+#include "Stadium_Blockout/DebugHelper.h"
+#include "AbilityLoadoutComponent.h"
 #include "CombatComponent.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
+
 
 
 // Sets default values for this component's properties
@@ -26,6 +28,9 @@ void UWeaponManager::BeginPlay()
 
 	CharacterRef = Cast<ACharacter>(GetOwner());
 	
+	if (!CharacterRef) return;
+	AbilityLoadoutRef = CharacterRef->FindComponentByClass<UAbilityLoadoutComponent>();
+	
 }
 
 
@@ -39,7 +44,11 @@ void UWeaponManager::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 void UWeaponManager::EquipWeapon(UWeaponData* NewWeapon)
 {
-	if (!NewWeapon || !NewWeapon->WeaponMesh || !CharacterRef || NewWeapon == CurrentEquippedWeaponData) return;
+	if (!NewWeapon || !NewWeapon->WeaponMesh || !CharacterRef || NewWeapon == CurrentEquippedWeaponData)
+	{
+		ADebugHelper::Debug("WeaponMesh or Character Ref failed");
+		return;
+	}
 	if (!CanSwapWeapon()) return;
 	
 	UnequipWeapon();
@@ -60,12 +69,26 @@ void UWeaponManager::EquipWeapon(UWeaponData* NewWeapon)
 		CombatComp->SetCapsuleProperties(CurrentEquippedWeaponData->TraceCapsuleRadius, CurrentEquippedWeaponData->TraceCapsuleHalfHeight);
 		CombatComp->bCanAttack = true;
 	}
-	
-	GrantAllWeaponAbilities();
+	if (CurrentEquippedWeaponData->AnimInstanceDetails.AnimInstance)
+	{
+		if (!CharacterRef || !CharacterRef->GetCharacterMovement()) return;
+		CharacterRef->GetCharacterMovement()->bOrientRotationToMovement = CurrentEquippedWeaponData->AnimInstanceDetails.bIsOrientRotationToMovement;
+		CharacterRef->GetCharacterMovement()->bUseControllerDesiredRotation = CurrentEquippedWeaponData->AnimInstanceDetails.bIsControllerDesiredRotation;
+		
+		if (USkeletalMeshComponent* Mesh = CharacterRef->GetMesh())
+		{
+			Mesh->SetAnimInstanceClass(CurrentEquippedWeaponData->AnimInstanceDetails.AnimInstance);
+		}
+	}
+	if (CharacterRef)
+	{
+		GrantAllWeaponAbilities();
+	}
 }
 
 void UWeaponManager::UnequipWeapon()
 {
+	if (!CharacterRef) return;
 	RemoveAllWeaponAbilities();
 	if (EquippedWeaponComponent)
 	{
@@ -83,60 +106,43 @@ void UWeaponManager::UnequipWeapon()
 void UWeaponManager::GrantAllWeaponAbilities()
 {
 	if (!CharacterRef) return;
+	if (!CurrentEquippedWeaponData) return;
 	
-	UAbilitySystemComponent* ASC = CharacterRef->GetComponentByClass<UAbilitySystemComponent>();
-	if (!ASC) return;
+	UAbilityLoadoutComponent* TempAbilityLoadoutRef = AbilityLoadoutRef = CharacterRef->FindComponentByClass<UAbilityLoadoutComponent>();
 	
-	const TArray<TObjectPtr<UGameplayAbilityData>>& Abilities = CurrentEquippedWeaponData->WeaponAbilities;
-	
-	for (const TObjectPtr<UGameplayAbilityData>& AbilityData : Abilities)
+	if (TempAbilityLoadoutRef)
 	{
-		if (!AbilityData || !AbilityData->AbilityClass) continue;
-		FGameplayAbilitySpec AbilitySpec(AbilityData->AbilityClass, AbilityData->AbilityLevel);
-		
-		FGameplayAbilitySpecHandle Handle = ASC->GiveAbility(AbilitySpec);
-		if (Handle.IsValid())
+		const FGameplayTagContainer AbilityTagsContainer = CurrentEquippedWeaponData->WeaponAbilitiesTags;
+	
+		for (const FGameplayTag& AbilityTag : AbilityTagsContainer)
 		{
-			AbilityDataHandles.Add(Handle);
+			TempAbilityLoadoutRef->GrantAbility(AbilityTag);
 		}
+	}
+	else
+	{
+		ADebugHelper::Debug("LoadoutRef failed");
 	}
 }
 
 void UWeaponManager::RemoveAllWeaponAbilities()
 {
-	UAbilitySystemComponent* ASC = CharacterRef
-		? CharacterRef->FindComponentByClass<UAbilitySystemComponent>()
-		: nullptr;
-
-	if (ASC && ASC->IsOwnerActorAuthoritative())
-	{
-		for (const FGameplayAbilitySpecHandle& Handle : AbilityDataHandles)
-		{
-			ASC->ClearAbility(Handle);
-		}
-	}
-	AbilityDataHandles.Empty();
+	if (!CurrentEquippedWeaponData) return;
+	if (!AbilityLoadoutRef) return;
 	
+	const FGameplayTagContainer AbilityTagsContainer = CurrentEquippedWeaponData->WeaponAbilitiesTags;
+	
+	for (const FGameplayTag& AbilityTag : AbilityTagsContainer)
+	{
+		AbilityLoadoutRef->RemoveAbility(AbilityTag);
+	}
 }
 
 bool UWeaponManager::CanSwapWeapon() const
 {
-	if (!CharacterRef) return false;
-
-	UAbilitySystemComponent* ASC =
-		CharacterRef->FindComponentByClass<UAbilitySystemComponent>();
-
-	if (!ASC) return false;
-
-	for (const FGameplayAbilitySpecHandle& Handle : AbilityDataHandles)
-	{
-		const FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromHandle(Handle);
-
-		if (Spec && Spec->IsActive())
-		{
-			return false;
-		}
-	}
-	return true;
+	if (!CurrentEquippedWeaponData) return true;
+	if (!CharacterRef || !AbilityLoadoutRef) return false;
+	
+	return !AbilityLoadoutRef->IsAnyAbilityActive(CurrentEquippedWeaponData->WeaponAbilitiesTags);
 }
 

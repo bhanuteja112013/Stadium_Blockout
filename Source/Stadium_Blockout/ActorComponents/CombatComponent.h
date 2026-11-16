@@ -24,10 +24,6 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Combo Settings")
-	float ComboInputTimeout = 1.f;
-
-	FTimerHandle ComboResetTimer;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Combat")
 	TSubclassOf<UGameplayEffect> DamageClass;
@@ -55,9 +51,6 @@ public:
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Trace Settings")
 	float Damage = 10.f;
-	
-	UPROPERTY(BlueprintReadWrite, Category = "Combat Settings")
-	float DamageMultiplier = 1.f;
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Combat Settings")
 	TObjectPtr<ACharacter> PlayerRef = nullptr;

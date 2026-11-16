@@ -3,6 +3,8 @@
 
 #include "UBR_AttributeSet.h"
 #include "GameplayEffectExtension.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Math/UnrealMathUtility.h"
 #include "Stadium_Blockout/Interfaces/DamageInterface.h"
 

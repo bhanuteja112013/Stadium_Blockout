@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemComponent.h"
 #include "Abilities/GameplayAbility.h"
 #include "Components/ActorComponent.h"
 #include "AbilityLoadoutComponent.generated.h"
@@ -20,10 +21,26 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-
-public:
-
-	TMap<FGameplayTag, TSubclassOf<FGameplayAbilitySpecHandle>> AbilitySpecHandles;
 	
-	TMap<FGameplayTag, TSubclassOf<UGameplayAbility>> GainedAbilities;
+	UPROPERTY()
+	TObjectPtr<UAbilitySystemComponent> AbilitySystemRef = nullptr;
+public:
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Abilities")
+	TMap<FGameplayTag, TSubclassOf<UGameplayAbility>> AbilitiesList;
+	
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Abilities")
+	TMap<FGameplayTag, FGameplayAbilitySpecHandle> SpecHandles;
+	
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	void GrantAbility(FGameplayTag AbilityTag);
+
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	void RemoveAbility(FGameplayTag AbilityTag);
+	
+	virtual void OnRegister() override;
+	
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	bool IsAnyAbilityActive(FGameplayTagContainer AbilityTags);
 };
+

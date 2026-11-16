@@ -3,6 +3,7 @@
 
 #include "BasePlayerCharacter.h"
 
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Stadium_Blockout/GAS/UBR_AttributeSet.h"
 
 
@@ -24,11 +25,12 @@ ABasePlayerCharacter::ABasePlayerCharacter()
 void ABasePlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	bIsDead = false;
+	if (!IsValid(AbilitySystemComponent)) return;
 	
-	if (IsValid(AbilitySystemComponent))
-	{
-		AbilitySystemComponent->InitAbilityActorInfo(this, this);
-	}
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UBR_AttributeSet::GetMovementSpeedAttribute()).AddUObject(this, &ABasePlayerCharacter::OnMovementSpeedChanged);
 	
 }
 
@@ -52,10 +54,24 @@ void ABasePlayerCharacter::TakeDamage_Implementation(float Amount, AActor* Damag
 void ABasePlayerCharacter::HandleDeath_Implementation()
 {
 	IDamageInterface::HandleDeath_Implementation();
+	bIsDead = true;
+}
+
+bool ABasePlayerCharacter::IsTargetLockable_Implementation() const
+{
+	return bIsLockable && !bIsDead;
 }
 
 UAbilitySystemComponent* ABasePlayerCharacter::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
+}
+
+void ABasePlayerCharacter::OnMovementSpeedChanged(const FOnAttributeChangeData& Data)
+{
+	if (GetCharacterMovement())
+	{
+		GetCharacterMovement()->MaxWalkSpeed = Data.NewValue;
+	}
 }
 

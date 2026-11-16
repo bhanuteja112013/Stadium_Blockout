@@ -4,11 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
-#include "Sockets.h"
-#include "Abilities/GameplayAbility.h"
 #include "Engine/DataAsset.h"
 #include "Animation/AnimInstance.h"
-#include "Stadium_Blockout/DataAssets/Abilities/GameplayAbilityData.h"
 #include "WeaponData.generated.h"
 
 /**
@@ -21,10 +18,10 @@ struct FAnimInstanceDetails
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim Instance")
-	TObjectPtr<UAnimInstance> AnimInstance = nullptr;
+	TSubclassOf<UAnimInstance> AnimInstance = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim Instance")
-	bool bIsOrientToRotation = false;
+	bool bIsOrientRotationToMovement = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim Instance")
 	bool bIsControllerDesiredRotation = true;
@@ -56,7 +53,7 @@ public:
 	float TraceCapsuleRadius = 15.f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Data")
-	TArray<TObjectPtr<UGameplayAbilityData>> WeaponAbilities; 
+	FGameplayTagContainer WeaponAbilitiesTags; 
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation Properties")
 	float TraceCapsuleHalfHeight = 30.f;

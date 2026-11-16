@@ -12,6 +12,7 @@
 #include "Stadium_Blockout/ActorComponents/WeaponManager.h"
 #include "Stadium_Blockout/Interfaces/DamageInterface.h"
 #include "Stadium_Blockout/GAS//UBR_AttributeSet.h"
+#include "GameplayEffectTypes.h"
 #include "BasePlayerCharacter.generated.h"
 
 UCLASS()
@@ -38,10 +39,16 @@ public:
 	virtual void TakeDamage_Implementation(float Amount, AActor* DamageCauser) override;
 	UFUNCTION(BlueprintCallable)
 	virtual void HandleDeath_Implementation() override;
+	UFUNCTION(BlueprintCallable)
+	virtual bool IsTargetLockable_Implementation() const override;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Character Properties")
+	bool bIsDead = false;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Character Properties")
+	bool bIsLockable = true;
 	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	
-	
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Attributes")
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
@@ -60,4 +67,6 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Attributes")
 	TObjectPtr<UAbilityLoadoutComponent> AbilityLoadoutComponent;
+
+	void OnMovementSpeedChanged(const FOnAttributeChangeData& Data);
 };

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilityLoadoutComponent.h"
 #include "Components/ActorComponent.h"
 #include "Stadium_Blockout/DataAssets/Weapons/WeaponData.h"
 #include "WeaponManager.generated.h"
@@ -20,13 +21,15 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-	
-	TArray<FGameplayAbilitySpecHandle> AbilityDataHandles;
 
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
+	
+	
+	UPROPERTY(BlueprintReadWrite)
+	TObjectPtr<UAbilityLoadoutComponent> AbilityLoadoutRef = nullptr;
 	
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<ACharacter> CharacterRef;
@@ -54,4 +57,5 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	bool CanSwapWeapon() const;
+	
 };
